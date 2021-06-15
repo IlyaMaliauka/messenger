@@ -32,8 +32,10 @@ clover {
     }
 }
 dependencies {
+    implementation 'junit:junit:4.12'
     clover 'org.openclover:clover:4.4.1'
     testImplementation('org.junit.jupiter:junit-jupiter:5.6.2')
+    testImplementation "org.mockito:mockito-core:3.11.1"
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
     testRuntimeOnly ('org.junit.jupiter:junit-jupiter-engine:5.6.2')
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.6.2")

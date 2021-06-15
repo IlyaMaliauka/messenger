@@ -1,9 +1,8 @@
 package com.epam.ld.module2.testing.template;
 
 import com.epam.ld.module2.testing.Client;
-import org.apache.commons.lang3.RandomStringUtils;
+import com.epam.ld.module2.testing.utils.FileReader;
 import org.apache.commons.lang3.text.StrSubstitutor;
-
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,12 +26,22 @@ public class TemplateEngine {
         Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(input);
 
+        int inc = 0;
         while (matcher.find()) {
-            System.out.println("Please enter " + matcher.group(1).toLowerCase() + " :");
             try {
-                replacementStrings.put(matcher.group(1), scanner.nextLine());
-            } catch (NoSuchElementException e) {
-                replacementStrings.put(matcher.group(1), "TEST_" + matcher.group(1));
+                if (System.getProperty("runMode").equals("file")) {
+                    FileReader fileReader = new FileReader();
+                    List<String> lines = fileReader.getLinesFromFile(System.getProperty("inputFile"));
+                    replacementStrings.put(matcher.group(1), lines.get(inc));
+                    inc++;
+                }
+            } catch (NullPointerException e) {
+                try {
+                    System.out.println("Please enter " + matcher.group(1).toLowerCase() + " :");
+                    replacementStrings.put(matcher.group(1), scanner.nextLine());
+                } catch (NoSuchElementException er) {
+                    replacementStrings.put(matcher.group(1), "TEST_" + matcher.group(1));
+                }
             }
         }
 

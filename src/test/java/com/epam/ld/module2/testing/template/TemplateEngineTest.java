@@ -3,17 +3,14 @@ package com.epam.ld.module2.testing.template;
 import com.epam.ld.module2.testing.Client;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 public class TemplateEngineTest {
 
-
-    protected TemplateEngine testTemplateEngine = new TemplateEngine();
-    protected Client testClient = new Client();
-    protected Template testTemplate = new Template();
+    private TemplateEngine testTemplateEngine = new TemplateEngine();
+    private Client testClient = new Client();
+    private Template testTemplate = new Template();
 
     @Test
     public void testTemplateEngineReplacesPlaceholders() {
