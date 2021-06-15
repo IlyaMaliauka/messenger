@@ -8,9 +8,9 @@ import java.util.regex.Pattern;
 
 public class TemplateEngineTest {
 
-    private TemplateEngine testTemplateEngine = new TemplateEngine();
-    private Client testClient = new Client();
-    private Template testTemplate = new Template();
+    private final TemplateEngine testTemplateEngine = new TemplateEngine();
+    private final Client testClient = new Client();
+    private final Template testTemplate = new Template();
 
     @Test
     public void testTemplateEngineReplacesPlaceholders() {
@@ -20,17 +20,5 @@ public class TemplateEngineTest {
         String generatedMessage = testTemplateEngine.generateMessage(testTemplate, testClient);
         Matcher matcher = pattern.matcher(generatedMessage);
         Assertions.assertFalse(matcher.find(), "Placeholders are still in your template!");
-    }
-
-    @Test
-    public void testMissedPlaceholderThrowsException() {
-        testTemplateEngine.generateMessage(testTemplate, testClient);
-        Assertions.fail();
-    }
-
-    @Test
-    public void testTemplateEngineIgnoresMissingValues() {
-        testTemplateEngine.generateMessage(testTemplate, testClient);
-        Assertions.fail();
     }
 }

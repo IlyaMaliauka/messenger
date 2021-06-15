@@ -5,6 +5,8 @@ import com.epam.ld.module2.testing.template.TemplateEngine;
 import com.epam.ld.module2.testing.utils.FileReader;
 import org.junit.jupiter.api.*;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 public class MailServerTest {
 
     private final MailServer mailServer = new MailServer();
@@ -26,7 +28,21 @@ public class MailServerTest {
         client.setAddresses("testAddress@Gmail.com");
         messenger.sendMessage(client, template);
         String fileOutput = fileReader.getTextFromFile("output");
-        Assertions.assertTrue(fileOutput.contains(client.getAddresses()), "Output file does not contain client email");
+        assertTrue(fileOutput.contains(client.getAddresses()), "Output file does not contain client email");
+    }
+
+
+    @Test()
+    public void testMissedPlaceholderThrowsException() {
+        System.setProperty("inputFile", "wrongInput");
+        assertThrows(IndexOutOfBoundsException.class, () -> messenger.sendMessage(client, template));
+    }
+
+    @Test
+    public void testTemplateEngineIgnoresExcessiveValues() {
+        String excessiveValue = fileReader.getLinesFromFile("input").get(8);
+        String fileOutput = fileReader.getTextFromFile("output");
+        assertFalse(fileOutput.contains(excessiveValue), "Output file contains excessive data");
     }
 
     @AfterAll
