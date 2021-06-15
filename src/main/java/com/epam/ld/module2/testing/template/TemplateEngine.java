@@ -2,7 +2,11 @@ package com.epam.ld.module2.testing.template;
 
 import com.epam.ld.module2.testing.Client;
 import com.epam.ld.module2.testing.utils.FileReader;
-import org.apache.commons.lang3.text.StrSubstitutor;
+import com.epam.ld.module2.testing.utils.exceptions.NoProvidedValueException;
+import org.apache.commons.text.StringSubstitutor;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,6 +15,10 @@ import java.util.regex.Pattern;
  * The type Template engine.
  */
 public class TemplateEngine {
+
+    private final Logger logger = LogManager.getLogger(TemplateEngine.class);
+    private final String regexp = "#\\{(.+?)}";
+
     /**
      * Generate message string.
      *
@@ -22,30 +30,27 @@ public class TemplateEngine {
         String input = template.templateMessage;
         Map<String, String> replacementStrings = new HashMap<>();
         Scanner scanner = new Scanner(System.in);
-        String regexp = "#\\{(.+?)}";
         Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(input);
 
-        int inc = 0;
+        int increment = 0;
         while (matcher.find()) {
-            try {
-                if (System.getProperty("runMode").equals("file")) {
-                    FileReader fileReader = new FileReader();
-                    List<String> lines = fileReader.getLinesFromFile(System.getProperty("inputFile"));
-                    replacementStrings.put(matcher.group(1), lines.get(inc));
-                    inc++;
-                }
-            } catch (NullPointerException e) {
+            if (System.getProperty("inputFile") != null) {
+                FileReader fileReader = new FileReader();
+                List<String> lines = fileReader.getLinesFromFile(System.getProperty("inputFile"));
                 try {
-                    System.out.println("Please enter " + matcher.group(1).toLowerCase() + " :");
-                    replacementStrings.put(matcher.group(1), scanner.nextLine());
-                } catch (NoSuchElementException er) {
-                    replacementStrings.put(matcher.group(1), "TEST_" + matcher.group(1));
+                    replacementStrings.put(matcher.group(1), lines.get(increment));
+                    increment++;
+                } catch (IndexOutOfBoundsException e) {
+                    throw new NoProvidedValueException("No value specified for a placeholder");
                 }
+            } else {
+                logger.info("Please enter " + matcher.group(1).toLowerCase() + " :");
+                replacementStrings.put(matcher.group(1), scanner.nextLine());
             }
         }
 
-        StrSubstitutor sub = new StrSubstitutor(replacementStrings, "#{", "}");
+        StringSubstitutor sub = new StringSubstitutor(replacementStrings, "#{", "}");
         return sub.replace(input);
     }
 }

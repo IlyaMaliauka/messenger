@@ -3,22 +3,24 @@ package com.epam.ld.module2.testing;
 import com.epam.ld.module2.testing.template.Template;
 import com.epam.ld.module2.testing.template.TemplateEngine;
 import com.epam.ld.module2.testing.utils.FileReader;
+import com.epam.ld.module2.testing.utils.exceptions.NoProvidedValueException;
+import org.junit.Rule;
 import org.junit.jupiter.api.*;
+import org.junit.rules.ExpectedException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class MailServerTest {
 
-    private final MailServer mailServer = new MailServer();
-    private final TemplateEngine templateEngine = new TemplateEngine();
-    private final Messenger messenger = new Messenger(mailServer, templateEngine);
-    private final Client client = new Client();
-    private final Template template = new Template();
-    private final FileReader fileReader = new FileReader();
+     MailServer mailServer = new MailServer();
+     TemplateEngine templateEngine = new TemplateEngine();
+     Messenger messenger = new Messenger(mailServer, templateEngine);
+     Client client = new Client();
+     Template template = new Template();
+     FileReader fileReader = new FileReader();
 
     @BeforeAll
     public static void init() {
-        System.setProperty("runMode", "file");
         System.setProperty("inputFile", "input");
         System.setProperty("outputFile", "output");
     }
@@ -27,27 +29,25 @@ public class MailServerTest {
     public void testMailServerFileMode() {
         client.setAddresses("testAddress@Gmail.com");
         messenger.sendMessage(client, template);
-        String fileOutput = fileReader.getTextFromFile("output");
+        String fileOutput = fileReader.getLinesFromFile("output").toString();
         assertTrue(fileOutput.contains(client.getAddresses()), "Output file does not contain client email");
     }
 
-
-    @Test()
+    @Test
     public void testMissedPlaceholderThrowsException() {
         System.setProperty("inputFile", "wrongInput");
-        assertThrows(IndexOutOfBoundsException.class, () -> messenger.sendMessage(client, template));
+        assertThrows(NoProvidedValueException.class, () -> messenger.sendMessage(client, template));
     }
 
     @Test
     public void testTemplateEngineIgnoresExcessiveValues() {
         String excessiveValue = fileReader.getLinesFromFile("input").get(8);
-        String fileOutput = fileReader.getTextFromFile("output");
+        String fileOutput = fileReader.getLinesFromFile("output").toString();
         assertFalse(fileOutput.contains(excessiveValue), "Output file contains excessive data");
     }
 
     @AfterAll
     public static void tearDown() {
-        System.clearProperty("runMode");
         System.clearProperty("inputFile");
         System.clearProperty("outputFile");
     }

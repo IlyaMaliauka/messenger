@@ -1,5 +1,8 @@
 package com.epam.ld.module2.testing.utils;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -13,6 +16,8 @@ import java.util.stream.Stream;
  */
 public class FileReader {
 
+    private final Logger logger = LogManager.getLogger(FileReader.class);
+
     /**
      * @param fileName name of file in resources folder.
      * @return Collection of file lines converted to strings.
@@ -22,17 +27,8 @@ public class FileReader {
         try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/").resolve(fileName))) {
             return lines.collect(Collectors.toList());
         } catch (IOException e) {
-            System.out.println("Failed to read data from CSV file " + e.getLocalizedMessage());
+            logger.error("Failed to read data from file " + e.getLocalizedMessage());
         }
         return Collections.emptyList();
-    }
-
-    public String getTextFromFile(String fileName) {
-        try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/").resolve(fileName))) {
-            return lines.collect(Collectors.joining());
-        } catch (IOException e) {
-            System.out.println("Failed to read data from CSV file " + e.getLocalizedMessage());
-        }
-        return null;
     }
 }
