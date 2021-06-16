@@ -18,6 +18,7 @@ public class TemplateEngine {
 
     private final Logger logger = LogManager.getLogger(TemplateEngine.class);
     private final String regexp = "#\\{(.+?)}";
+    private final FileReader fileReader = new FileReader();
 
     /**
      * Generate message string.
@@ -35,8 +36,7 @@ public class TemplateEngine {
 
         int increment = 0;
         while (matcher.find()) {
-            if (System.getProperty("inputFile") != null) {
-                FileReader fileReader = new FileReader();
+            if (System.getProperty("runMode") != null) {
                 List<String> lines = fileReader.getLinesFromFile(System.getProperty("inputFile"));
                 try {
                     replacementStrings.put(matcher.group(1), lines.get(increment));
